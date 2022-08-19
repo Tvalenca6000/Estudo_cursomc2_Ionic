@@ -3,10 +3,12 @@ package com.tvalenca.cursomc.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.tvalenca.cursomc.domain.Categoria;
 import com.tvalenca.cursomc.repositories.Categoria_Repository;
+import com.tvalenca.cursomc.services.exceptions.DataIntegrityException;
 import com.tvalenca.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -29,5 +31,16 @@ public class Categoria_Service {
     public Categoria update(Categoria obj){
         buscar(obj.getId());
         return repo.save(obj);
+    }
+
+    public void delete(Integer id){
+        buscar(id);
+        try{
+            repo.deleteById(id);
+        }
+        catch(DataIntegrityViolationException e){
+            throw new DataIntegrityException("Não é possivel excluir uma Categoria que possui produtos");
+        }
+
     }
 }
