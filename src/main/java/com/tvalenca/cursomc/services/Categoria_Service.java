@@ -1,5 +1,6 @@
 package com.tvalenca.cursomc.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,4 +44,9 @@ public class Categoria_Service {
         }
 
     }
+
+    public List<Categoria> findAll(){
+        return repo.findAll();
+    }
+    
 }

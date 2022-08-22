@@ -1,6 +1,8 @@
 package com.tvalenca.cursomc.resources;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.tvalenca.cursomc.domain.Categoria;
+import com.tvalenca.cursomc.dto.Categoria_DTO;
 import com.tvalenca.cursomc.services.Categoria_Service;
 
 @RestController
@@ -22,7 +25,7 @@ public class Categoria_Resource {
     private Categoria_Service service;
     
     @RequestMapping(value="/{id}", method=RequestMethod.GET)
-    public ResponseEntity<?> find(@PathVariable Integer id){
+    public ResponseEntity<Categoria> find(@PathVariable Integer id){
         Categoria obj = service.buscar(id);
         return ResponseEntity.ok().body(obj);
     }
@@ -48,4 +51,11 @@ public class Categoria_Resource {
         return ResponseEntity.noContent().build();
     }
 
+    @RequestMapping(method=RequestMethod.GET)
+    public ResponseEntity<List<Categoria_DTO>> findAll(){
+        List<Categoria> list = service.findAll();
+        List<Categoria_DTO> listDto = list.stream().map(obj -> new Categoria_DTO(obj)).collect(Collectors.toList());
+        return ResponseEntity.ok().body(listDto);
+    }
+    
 }
