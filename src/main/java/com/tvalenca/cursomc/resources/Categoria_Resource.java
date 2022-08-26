@@ -64,7 +64,7 @@ public class Categoria_Resource {
     }
     
     @RequestMapping(value="/page", method=RequestMethod.GET)
-    public ResponseEntity<Page<?>> findPage(
+    public ResponseEntity<Page<Categoria_DTO>> findPage(
             @RequestParam(value = "page",defaultValue = "0") Integer page, 
             @RequestParam(value = "linesPerPage",defaultValue = "24") Integer linesPerPage, //DefaultValue 24 pois ele é multiplo de 1,2,3,4. Fica mais facil de organizar o layout responsivo
             @RequestParam(value = "orderBy",defaultValue = "nome") String orderBy, 
