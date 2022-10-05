@@ -64,6 +64,7 @@ public class Pedido_Service {
 			ip.setPedido(obj);
 		}
 		item_Pedido_Repository.saveAll(obj.getItens());
+		// Verificando ToString System.out.println(obj);
 		return obj;
 	}
 }
