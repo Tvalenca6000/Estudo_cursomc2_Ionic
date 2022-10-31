@@ -6,8 +6,12 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.tvalenca.cursomc.domain.Cliente;
 import com.tvalenca.cursomc.domain.Item_Pedido;
 import com.tvalenca.cursomc.domain.Pagamento_Com_Boleto;
 import com.tvalenca.cursomc.domain.Pedido;
@@ -15,6 +19,8 @@ import com.tvalenca.cursomc.domain.enums.Estado_Pagamento;
 import com.tvalenca.cursomc.repositories.Item_Pedido_Repository;
 import com.tvalenca.cursomc.repositories.Pagamento_Repository;
 import com.tvalenca.cursomc.repositories.Pedido_Repository;
+import com.tvalenca.cursomc.security.UserSS;
+import com.tvalenca.cursomc.services.exceptions.AuthorizationException;
 import com.tvalenca.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -70,5 +76,15 @@ public class Pedido_Service {
 		// Verificando ToString System.out.println(obj);
 		email_Service.send_OrderConfirmationEmail(obj);
 		return obj;
+	}
+
+	public Page<Pedido> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
+		UserSS user = User_Service.authenticated();
+		if (user == null) {
+			throw new AuthorizationException("Acesso negado");
+		}
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		Cliente cliente =  cliente_Service.buscar(user.getId());
+		return repo.findByCliente(cliente, pageRequest);
 	}
 }
