@@ -3,8 +3,10 @@ package com.tvalenca.cursomc.services;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.awt.image.BufferedImage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,6 +44,12 @@ public class Cliente_Service {
 
     @Autowired
     private S3Service s3Service;
+
+    @Autowired
+    private Image_Service image_Service;
+
+    @Value("${img.prefix.client.profile}")
+    private String prefix;
 
     public Cliente buscar(Integer id){
 
@@ -118,12 +126,10 @@ public class Cliente_Service {
         if(user == null){
             throw new AuthorizationException("Acesso Negado");
         }
-        URI uri = s3Service.uploadFile(multipartFile);
 
-        Cliente cli = repo.findByEmail(user.getUsername());
-        cli.setImagemURL(uri.toString());
-        repo.save(cli);
+        BufferedImage jpgImage = image_Service.getJpgImageFromFile(multipartFile);
+        String fileName = prefix + user.getId() + ".jpg";
 
-        return uri;
+        return s3Service.uploadFile(image_Service.getInputStream(jpgImage, ".jpg"), fileName, "image");
     }
 }
